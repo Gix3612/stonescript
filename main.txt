@@ -1,1 +1,3 @@
-
+sys.SetFileUrl(
+^"https://raw.githubusercontent.com/Gix3612/stonescript/")
+import main
