@@ -1,1 +1,32 @@
->`0,1,fileUrl = @sys.fileUrl@
+// --==[ Weapons ]==-- \\
+equipL sword
+equipR shield
+
+?foe = mosquito
+  equip crossbow
+
+?foe = boss & foe.debuffs.count = 0
+  equipR dp
+
+?foe.distance >= 11 & foe.distance <= 16
+  equipR dashing
+
+?foe = boss & foe.distance <= 10 &
+^item.GetCooldown("bardiche") <= 0 |
+^item.GetCooldown("bardiche") > 870
+  equip bardiche
+  activate R
+var cd
+cd = item.GetCooldown("bardiche")
+>`0,0,Bardiche cooldown = @cd@
+
+?foe ! boss & foe.distance > 19
+  equipL ouroboros
+
+?pickup.distance < 10
+  equipL star
+
+// --==[ Harvest ]==-- \\
+?loc = deadwood
+  ?harvest.distance < 10
+    equip hatchet
