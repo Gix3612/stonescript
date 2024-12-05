@@ -1,11 +1,18 @@
+// --==[ Imports ]==-- \\
+import UI/MindstoneButton
+
 // --==[ Weapons ]==-- \\
-equipL sword
-equipR shield
+// equipL sword
+// equipR shield
 
 ?foe = mosquito
   equip crossbow
 
 ?foe = boss & foe.debuffs.count = 0
+  equipR dp
+  equipR df
+  equipR dc
+  equipR dp
   equipR dp
 
 ?foe.distance >= 11 & foe.distance <= 16
