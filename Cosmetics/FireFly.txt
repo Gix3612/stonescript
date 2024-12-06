@@ -1,0 +1,161 @@
+//FireFly
+//By: Toast 1.0
+
+var FireColour = color.FromRGB(6,6,6)
+var FireColourA = color.FromRGB(30,30,30)
+//var FireFlyX
+//var FireFlyStartX
+var FireFlyA
+var FireFlyB
+var FireFlyC
+var FireFlyD
+var FireText
+var BasePanel
+
+var FireFlyE
+var FireFlyF
+var FireFlyG
+var FireFlyH
+var FireTextA
+var BasePanelA
+
+var customStyle = ui.AddStyle(＂
+^###
+^###
+^###＂)
+
+func SetFireFlys()
+  BasePanel = ui.AddPanel()
+  BasePanel.style = customStyle  
+
+  BasePanelA = ui.AddPanel()
+  BasePanelA.style = customStyle  
+
+  FireFlyA = ui.AddCanvas() 
+  FireFlyB = ui.AddCanvas() 
+  FireFlyC = ui.AddCanvas() 
+  FireFlyD = ui.AddCanvas() 
+  FireText = ui.AddText("•")
+
+  FireFlyE = ui.AddCanvas() 
+  FireFlyF = ui.AddCanvas() 
+  FireFlyG = ui.AddCanvas() 
+  FireFlyH = ui.AddCanvas() 
+  FireTextA = ui.AddText("•")
+
+  BasePanel.x = 20
+  BasePanel.y = 10
+  BasePanel.anchor = top_left
+  BasePanel.dock = top_left
+
+  BasePanelA.x = 20
+  BasePanelA.y = 10
+  BasePanelA.anchor = top_left
+  BasePanelA.dock = top_left
+
+  FireFlyA.w = 5
+  FireFlyA.h = 3
+  FireFlyB.w = 7
+  FireFlyB.h = 1
+  FireFlyC.w = 3
+  FireFlyC.h = 3
+  FireFlyD.w = 1
+  FireFlyD.h = 5
+
+  FireFlyE.w = 5
+  FireFlyE.h = 3
+  FireFlyF.w = 7
+  FireFlyF.h = 1
+  FireFlyG.w = 3
+  FireFlyG.h = 3
+  FireFlyH.w = 1
+  FireFlyH.h = 5
+
+  FireText.align = center
+  FireText.y = 2
+  FireText.color = #yellow
+
+  FireTextA.align = center
+  FireTextA.y = 2
+  FireTextA.color = #yellow
+
+  FireFlyA.blend = Add
+  FireFlyB.blend = Add
+  FireFlyC.blend = Add
+  FireFlyD.blend = Add
+
+  FireFlyE.blend = Add
+  FireFlyF.blend = Add
+  FireFlyG.blend = Add
+  FireFlyH.blend = Add
+
+  FireFlyA.SetBG(FireColour)
+  FireFlyB.SetBG(FireColour)
+  FireFlyC.SetBG(FireColour)
+  FireFlyD.SetBG(FireColour)
+
+  FireFlyE.SetBG(FireColour)
+  FireFlyF.SetBG(FireColour)
+  FireFlyG.SetBG(FireColour)
+  FireFlyH.SetBG(FireColour)
+
+  FireFlyA.SetFG(FireColourA)
+  FireFlyB.SetFG(FireColourA)
+  FireFlyC.SetFG(FireColourA)
+  FireFlyD.SetFG(FireColourA)
+
+  FireFlyE.SetFG(FireColourA)
+  FireFlyF.SetFG(FireColourA)
+  FireFlyG.SetFG(FireColourA)
+  FireFlyH.SetFG(FireColourA)
+
+  BasePanel.Add(FireFlyA)
+  BasePanel.Add(FireFlyB)
+  BasePanel.Add(FireFlyC)
+  BasePanel.Add(FireFlyD)
+  BasePanel.Add(FireText)
+
+  BasePanelA.Add(FireFlyE)
+  BasePanelA.Add(FireFlyF)
+  BasePanelA.Add(FireFlyG)
+  BasePanelA.Add(FireFlyH)
+  BasePanelA.Add(FireTextA)
+
+?loc.begin
+  SetFireFlys()
+:
+  //Circle Algorithem
+  //BasePanel.y = input.y -2 + math.RoundToInt(3*math.Cos((totaltime+0)/6.0))
+  //BasePanel.x = input.x + math.RoundToInt(5*math.Sin((totaltime+0)/6.0))
+
+  //Slanted Oval
+  //BasePanel.y = input.y -2 + math.RoundToInt(3*math.Sin((totaltime+5)/6.0))
+  //BasePanel.x = input.x + math.RoundToInt(5*math.Sin((totaltime+0)/6.0))
+
+  //Random Curves
+  //BasePanel.y = input.y -2 + math.RoundToInt(3*math.Sin((totaltime/9.7+5)%6.0))
+  //BasePanel.x = input.x + math.RoundToInt(5*math.Sin((totaltime/8.5+0)%6.0))
+
+  var YBaseMove
+  var XBaseMove = 20
+
+  var YBaseMoveA
+  var XBaseMoveA = 35
+  var RngOffset = (rng*10)/10000
+
+  YBaseMove = math.RoundToInt(3*math.Sin((totaltime)/8.0)) + 2
+  ?time%2
+    XBaseMove --
+  ?XBaseMove < -6
+    XBaseMove = screen.w+3 + (rng*5)/10000
+  BasePanel.y = YBaseMove + math.RoundToInt(3*math.Sin((totaltime/9.7+5)%6.0))
+  BasePanel.x = XBaseMove + math.RoundToInt(5*math.Sin((totaltime/8.5+0)%6.0))
+
+  YBaseMoveA = math.RoundToInt(3*math.Sin((totaltime)/8.0+RngOffset)) + 2
+  ?time%2=1
+    XBaseMoveA --
+  ?XBaseMoveA < -6
+    XBaseMoveA = screen.w+3 + (rng*5)/10000
+    RngOffset = (rng*10)/10000
+  BasePanelA.y = YBaseMoveA + math.RoundToInt(3*math.Sin((totaltime/9.7+14)%6.0))
+  BasePanelA.x = XBaseMoveA + math.RoundToInt(5*math.Sin((totaltime/8.5+3)%6.0))
