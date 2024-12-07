@@ -12,8 +12,6 @@ import UI/MindstoneButton
   equipR dp
   equipR df
   equipR dc
-  equipR dp
-  equipR dp
 
 ?foe.distance >= 11 & foe.distance <= 16
   equipR dashing
