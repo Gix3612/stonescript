@@ -1,0 +1,91 @@
+// Debug gui begin coodrinates
+var x = 1
+var y = 1
+
+var debug
+debug = [
+  "foe",
+  "ai",
+  "time",
+  // "positions",
+  "reloads",
+  // "equips",
+]
+
+// AI states
+?debug.Contains("ai")
+  var aiStates
+  aiStates = ""
+
+  ?ai.enabled
+    aiStates += "enabled "
+  ?ai.idle
+    aiStates += "idle "
+  ?ai.paused
+    aiStates += "paused "
+  ?ai.walking 
+    aiStates += "walking"
+
+  >`@x@,@y + 8@,#f0f,ai: @aiStates@
+
+// Foe
+?debug.Contains("foe")
+  var element
+
+  ?foe = poison
+    element = "∞"
+  :?foe = vigor
+    element = "❤"
+  :?foe = aether
+    element = "*"
+  :?foe = fire
+    element = "φ"
+  :?foe = ice
+    element = "❄"
+  :
+    element = "o"
+
+  >`@x@,@y@,#f0f,D: @foe.distance@, C:@foe.count@ F:@foe.state@/@foe.time@ @element@ @foe@
+  >`@x@,@y + 1@,#f0f,-: @foe.debuffs.string@
+  >`@x@,@y + 2@,#f0f,+: @foe.buffs.string@
+
+// Time
+var loops = 0
+?loc.loop
+  loops++
+
+?debug.Contains("time")
+  >`@x@,@y + 4@,#f0f,T: @totaltime@f, @totaltime/30@s, ∞:@loops@
+  >`@x@,@y + 5@,#f0f,B: @loc.bestTime@t, A:@loc.averageTime@t
+
+// Positions
+?debug.Contains("positions")
+  >`@x@,@y + 6@,#f0f,X: @pos.x@, Y: @pos.y@, Z: @pos.z@
+  >`@x@,@y + 7@,#f0f,i: @screen.i@, @screen.w@ x @screen.h@
+
+// Equips
+?debug.Contains("equips")
+  >`@x@,@y + 21@,#f0f,P:@item.potion@
+  >`@x@,@y + 22@,#f0f,L:@item.left.state@/@item.left.time@ @item.left@
+  >`@x@,@y + 23@,#f0f,R:@item.right.state@/@item.right.time@ @item.right@
+
+// Reloads
+?debug.Contains("reloads")
+  var items
+  var icon = 0
+  var cooldown = 1
+
+  items = [
+    ["=/", item.GetCooldown("blade")],
+    ["_)", item.GetCooldown("bardiche")],
+    ["(>", item.GetCooldown("dash")],
+    [">>", item.GetCooldown("bash")],
+    ["-·", item.GetCooldown("quarterstaff")],
+    ["<<", item.GetCooldown("mind")],
+    ["(}", item.GetCooldown("mask")],
+    ["-[", item.GetCooldown("heavy_hammer")],
+    ["-≡", item.GetCooldown("skeleton_arm")],
+  ]
+
+  for i = 0..items.Count()-1
+    >`@x@,@y+i + 11@,#f0f,@items[i][icon]@ @items[i][cooldown]@
