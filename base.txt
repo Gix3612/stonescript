@@ -1,49 +1,180 @@
 // --==[ Imports ]==-- \\
 import UI/MindstoneButton
-
-// --==[ Weapons ]==-- \\
-// equipL sword
-// equipR shield
-
-?foe = mosquito
-  equip crossbow
-
-?foe = boss & foe.debuffs.count = 0
-  equipR dp
-  equipR df
-  equipR dc
-
-?foe.distance >= 11 & foe.distance <= 16
-  equipR dashing
-
-?foe = boss & foe.distance <= 10 &
-^item.GetCooldown("bardiche") <= 0 |
-^item.GetCooldown("bardiche") > 870
-  equip bardiche
-  activate R
-var cd
-cd = item.GetCooldown("bardiche")
->`0,0,Bardiche cooldown = @cd@
-
-?foe ! boss & foe.distance > 19
-  equipL ouroboros
-
-?pickup.distance < 10
-  equipL star
-
-// --==[ Harvest ]==-- \\
-?loc = deadwood
-  ?harvest.distance < 10
-    equip hatchet
-
-
-import UI/MindstoneButton
 import Fishing
 
+// --==[ Variables ]==-- \\
 var count
 var health
 var meleeDist = 8
 var longDist = 19
+
+// --==[ Cooldown Functions ]==-- \\
+func WeaponCooldowns(count, buff)
+  Skeleton(buff)
+  Bardiche()
+  Hammer(count)
+  Mask()
+  Blade(count)
+  Fissure(count)
+
+func MeleeCooldowns(count, buff)
+  Skeleton(buff)
+  Bardiche()
+  Hammer(count)
+
+func RangeCooldowns(count)
+  Mask()
+  Blade(count)
+  Fissure(count)
+
+func AreaCooldowns(count)
+  Mask()
+  Blade(count)
+  Hammer(count)
+  Fissure(count)
+
+func SingleCooldowns(buff)
+  Skeleton(buff)
+  Bardiche()
+  Mask()
+
+func Bardiche()
+  ?(item.GetCooldown(＂bardiche＂) < 1 |
+  ^item.GetCooldown(＂bardiche＂) > 870) &
+  ^foe.count >= 1 & foe.distance < meleeDist
+    equip bardiche
+    activate R
+    break
+
+func Hammer(count)
+  ?(item.GetCooldown(＂heavy_hammer＂) < 1 | 
+  ^item.GetCooldown(＂heavy_hammer＂) > 630) &
+  ^foe.count >= count & foe.distance < meleeDist
+    equip heavy hammer
+    activate R
+    break
+
+func Mask()
+  ?item.GetCooldown(＂mask＂) < 1 &
+  ^foe.count > 0 & foe.distance < longDist
+    equip mask
+    activate R
+    break
+
+func Skeleton(buff)
+  ?item.GetCooldown(＂skeleton_arm＂) < 2 &
+  ^foe.count >= 1 & foe.distance < meleeDist
+    equip skeleton
+    ?buffs.GetCount(Pick-pocket) >= buff
+      activate R
+    break
+
+func Blade(count)
+  ?item.GetCooldown(＂blade＂) < 1 &
+  ^foe.count >= count &
+  ^foe.distance < longDist
+    equip fallen god
+    activate R
+    break
+
+func Fissure(count)
+  ?(item.GetCooldown(＂fissure＂) < 1 |
+  ^item.GetCooldown(＂fissure＂) > 450) &
+  ^foe.count >= count & foe.distance >= longDist
+    equipL fissure
+    activate L
+
+func Quarterstaff()
+  ?(item.GetCooldown(＂quarterstaff＂) < 1 &
+  ^(foe.distance > meleeDist)
+    equipL "quarterstaff -socket -stone"
+    activate L
+
+func Hatchet()
+  ?(item.GetCooldown(＂hatchet＂) < 1 &
+  ^(foe.distance < meleeDist | harvest = Tree)
+    equipL hatchet
+    activate L
+
+// --==[ Buff Functions ]==-- \\
+Smite
+Pick-pocket
+
+
+// --==[ Debuff Functions ]==-- \\
+Stun
+Armor Fatigue
+Feeble
+Chill
+Burn
+  immune_to_debuff_damage
+Weaken
+
+// --==[ Utility Functions ]==-- \\
+func Backstep()
+  var LeftItem = item.left
+  var RightItem = item.right
+  equip mind
+  equipL LeftItem
+  equipR RightItem
+
+func Dash()
+  ?foe.distance > meleeDist & foe.distance < 14
+    var LeftItem = item.left
+    var RightItem = item.right
+    equip ashing
+    equipL LeftItem
+    equipR RightItem
+
+func Push(handed)
+  ?foe.distance <= 13 &! unpushable
+    var LeftItem = item.left
+    var RightItem = item.right
+    ?handed = "right" | handed = "R"
+      equipR "grappling hook"
+    : equipL "grappling hook"
+    ?foe.distance > 13
+      equipL LeftItem
+      equipR RightItem
+    : break
+
+func Heal(health)
+  ?hp < health & item.potion = healing
+    activate potion
+  ?hp < health * 2 & item.potion = vampire
+    activate potion
+  ?foe.count > 0 & hp < health * 2 &!
+  ^ai.paused
+    equipL dL
+    equipR ah
+    break
+
+// --==[ Out of Combat ]==-- \\
+?(foe ! boss & foe.distance > longDist |
+^ai.paused)
+  equipL ouroboros
+  ?hp < maxhp-2
+    equipR tower
+  : equipR tri
+
+?harvest=Boulder & 
+^harvest.distance < meleeDist
+  equip shovel
+
+?harvest=Tree & 
+^harvest.distance < meleeDist
+  ?hp < maxhp-2
+    equipR hatchet
+  : equipL hatchet
+  Hatchet()
+
+?pickup.distance < meleeDist
+  ?hp < maxhp-2
+    equipR star
+  : equipL star
+
+
+
 
 ?foe = bolesh
   ?hp < 16
@@ -51,7 +182,7 @@ var longDist = 19
     equipL ice
     equipR ah
     break
-  RangeCD(0)
+  RangeCooldowns()
   ?foe.distance < 12
     Backstep()
   equipL crossbow
@@ -61,7 +192,7 @@ var longDist = 19
 ?loc=rocky & foe.distance < longDist
   ?foe.armor > 0 & hp > 15
     equip heavy hammer
-    Hammer()
+    Hammer(1)
     break
   ?hp < 15
     equipL dL
@@ -92,7 +223,7 @@ var longDist = 19
 
 Heal(10)
 
-CD(5)
+WeaponCooldowns(5, 1)
 
 ?foe = immune_to_physical
   equipL wand
@@ -107,119 +238,12 @@ CD(5)
 ?foe.distance > meleeDist
   equip crossbow U
 
-func CD(count)
-  Skeleton()
-  Bardiche()
-  Hammer()
-  Mask()
-  Blade(count)
-  Fissure(count)
-
-func MeleeCD(count)
-  Skeleton()
-  Bardiche()
-  Hammer()
-
-func RangeCD(count)
-  Mask()
-  Blade(count)
-  Fissure(count)
-
-func Bardiche()
-  ?(item.GetCooldown(＂bardiche＂) < 1 |
-  ^item.GetCooldown(＂bardiche＂) > 870) &
-  ^foe.count > 0 & foe.distance < meleeDist
-    equip bardiche
-    activate R
-    break
-
-func Hammer()
-  ?(item.GetCooldown(＂heavy_hammer＂) < 1 | 
-  ^item.GetCooldown(＂heavy_hammer＂) > 630) &
-  ^foe.count > 0 & foe.distance < meleeDist
-    equip heavy hammer
-    activate R
-    break
-
-func Mask()
-  ?item.GetCooldown(＂mask＂) < 1 &
-  ^foe.count > 0 & foe.distance < longDist
-    equip mask
-    activate R
-    break
-
-func Skeleton()
-  ?item.GetCooldown(＂skeleton_arm＂) < 2 &
-  ^foe.count > 0 & foe.distance < meleeDist
-    equip skeleton
-    ?buffs.count > 0
-      activate R
-    break
-
-func Blade(count)
-  ?item.GetCooldown(＂blade＂) < 1 &
-  ^foe.count > count &
-  ^foe.distance < longDist
-    equip fallen god
-    activate R
-    break
-
-func Fissure(count)
-  ?(item.GetCooldown(＂fissure＂) < 1 |
-  ^item.GetCooldown(＂fissure＂) > 450) &
-  ^foe.count > count & foe.distance >= longDist
-    equipL fissure
-    activate L
-
-func Backstep()
-  var LeftItem = item.left
-  var RightItem = item.right
-  equip mind
-  equipL LeftItem
-  equipR RightItem
-
-func Dash()
-  var LeftItem = item.left
-  var RightItem = item.right
-  equip ash
-  equipL LeftItem
-  equipR RightItem
-
 ?foe.armor > 35
-  Hammer()
-  ?foe.distance > meleeDist
-    Dash()
+  Hammer(1)
+  Dash()
   ?hp < 15
     equipL hammer
     equipR ah
-
-?(foe ! boss & foe.distance > longDist |
-^ai.paused)
-  equipL ouroboros
-  ?hp < maxhp-2
-    equipR tower
-  :
-    equipR tri
-
-func Heal(health)
-  ?hp < health & item.potion = healing
-    activate potion
-  ?foe.count > 0 & hp < health * 2 &!
-  ^ai.paused
-    equipL dL
-    equipR ah
-    break
-
-?harvest=Boulder & 
-^harvest.distance < meleeDist
-  equip shovel
-
-?harvest=Tree & 
-^harvest.distance < meleeDist
-  equip hatchet
-
-?pickup.distance < meleeDist
-  equip star
 
 import UI/MindstoneButton
 import Cosmetics/PetBoo
