@@ -65,7 +65,7 @@ func Skeleton(buff)
   ?item.GetCooldown(＂skeleton_arm＂) < 2 &
   ^foe.count >= 1 & foe.distance < meleeDist
     equip skeleton
-    ?buffs.GetCount(Pick-pocket) >= buff
+    ?buffs.GetCount("Pick-pocket") >= buff
       activate R
     break
 
