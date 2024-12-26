@@ -90,11 +90,14 @@ func Quarterstaff()
     equipL "quarterstaff -socket -stone"
     activate L
 
-func Hatchet()
+func Hatchet(handed)
   ?(item.GetCooldown(＂hatchet＂) < 1 &
   ^(foe.distance < meleeDist | harvest = Tree)
-    equipL hatchet
-    activate L
+    ?handed = R
+      equipR hatchet
+      activate R
+    : equipL hatchet
+      activate L
 
 // --==[ Buff Functions ]==-- \\
 Smite
@@ -104,6 +107,7 @@ Smite
 Stun
 "Armor Fatigue"
 Feeble
+Ignition
 Chill
 Burn
   immune_to_debuff_damage
@@ -148,6 +152,16 @@ func Heal(health)
     equipR ah
     break
 
+func flashR(item)
+    var PrevItem = item.right
+    equipR item
+    equipR PrevItem
+
+func flashL(item)
+    var PrevItem = item.left
+    equipL item
+    equipL PrevItem
+
 // --==[ Out of Combat ]==-- \\
 ?(foe ! boss & foe.distance > longDist |
 ^ai.paused)
@@ -156,21 +170,15 @@ func Heal(health)
     equipR tower
   : equipR tri
 
-?harvest=Boulder & 
-^harvest.distance < meleeDist
-  equip shovel
-
-?harvest=Tree & 
-^harvest.distance < meleeDist
-  ?hp < maxhp-2
+?harvest.distance < meleeDist
+  ?harvest=Boulder
+    equip shovel
+  ?harvest=Tree
     equipR hatchet
-  : equipL hatchet
-  Hatchet()
+    Hatchet(R)
 
 ?pickup.distance < meleeDist
-  ?hp < maxhp-2
-    equipR star
-  : equipL star
+  flashR(star)
 
 // --==[ Potion Functions ]==-- \\
 func potion(type)
