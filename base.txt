@@ -98,12 +98,11 @@ func Hatchet()
 
 // --==[ Buff Functions ]==-- \\
 Smite
-Pick-pocket
-
+"Pick-pocket"
 
 // --==[ Debuff Functions ]==-- \\
 Stun
-Armor Fatigue
+"Armor Fatigue"
 Feeble
 Chill
 Burn
@@ -172,6 +171,35 @@ func Heal(health)
   ?hp < maxhp-2
     equipR star
   : equipL star
+
+// --==[ Potion Functions ]==-- \\
+func potion(type)
+  ?!loc.begin
+    return
+  
+  ?type = "strength"
+    brew stone
+  :?type = "experience"
+    brew wood
+  :?type = "healing"
+    brew tar
+  :?type = "lightning"
+    brew bronze
+  :?type = "vampiric"
+    brew tar + bronze
+  :?type = "lucky"
+    brew stone + bronze
+  :?type = "berserk"
+    brew wood + bronze
+  :?type = "cleansing"
+    brew wood + tar
+  :?type = "defensive"
+    brew stone + tar
+  :?type = "invisibility"
+    brew wood + stone
+  :
+    ui.ShowBanner("Wrong potion type!")
+    loc.Leave()
 
 
 
