@@ -280,20 +280,3 @@ WeaponCooldowns(5, 1)
   ?hp < 15
     equipL hammer
     equipR ah
-
-import UI/MindstoneButton
-import Cosmetics/PetBoo
-
-?foe.armor > 35
-  equip heavy hammer
-  ?foe.distance > 8
-    equipL hammer
-    equipR ash
-  break
-
-equip crossbow U
-?foe = boss
-  equip blade
-  ?foe.distance > 8
-    equipL crossbow
-    equipR ash
