@@ -1,7 +1,3 @@
-// --==[ Imports ]==-- \\
-import UI/MindstoneButton
-import Fishing
-
 // --==[ Variables ]==-- \\
 var count
 var health
@@ -85,13 +81,13 @@ func Fissure(count)
     activate L
 
 func Quarterstaff()
-  ?(item.GetCooldown(＂quarterstaff＂) < 1 &
+  ?item.GetCooldown(＂quarterstaff＂) < 1 &
   ^(foe.distance > meleeDist)
     equipL "quarterstaff -socket -stone"
     activate L
 
 func Hatchet(handed)
-  ?(item.GetCooldown(＂hatchet＂) < 1 &
+  ?item.GetCooldown(＂hatchet＂) < 1 &
   ^(foe.distance < meleeDist | harvest = Tree)
     ?handed = R
       equipR hatchet
