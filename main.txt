@@ -1,33 +1,33 @@
 // --==[ Variables ]==-- \\
-var count
+var foeCount
 var health
 var meleeDist = 8
 var longDist = 19
 
 // --==[ Cooldown Functions ]==-- \\
-func WeaponCooldowns(count, buff)
+func WeaponCooldowns(foeCount, buff)
   Skeleton(buff)
   Bardiche()
-  Hammer(count)
+  Hammer(foeCount)
   Mask()
-  Blade(count)
-  Fissure(count)
+  Blade(foeCount)
+  Fissure(foeCount)
 
-func MeleeCooldowns(count, buff)
+func MeleeCooldowns(foeCount, buff)
   Skeleton(buff)
   Bardiche()
-  Hammer(count)
+  Hammer(foeCount)
 
-func RangeCooldowns(count)
+func RangeCooldowns(foeCount)
   Mask()
-  Blade(count)
-  Fissure(count)
+  Blade(foeCount)
+  Fissure(foeCount)
 
-func AreaCooldowns(count)
+func AreaCooldowns(foeCount)
   Mask()
-  Blade(count)
-  Hammer(count)
-  Fissure(count)
+  Blade(foeCount)
+  Hammer(foeCount)
+  Fissure(foeCount)
 
 func SingleCooldowns(buff)
   Skeleton(buff)
@@ -42,10 +42,10 @@ func Bardiche()
     activate R
     break
 
-func Hammer(count)
+func Hammer(foeCount)
   ?(item.GetCooldown(＂heavy_hammer＂) < 1 | 
   ^item.GetCooldown(＂heavy_hammer＂) > 630) &
-  ^foe.count >= count & foe.distance < meleeDist
+  ^foe.count >= foeCount & foe.distance < meleeDist
     equip heavy hammer
     activate R
     break
@@ -65,18 +65,18 @@ func Skeleton(buff)
       activate R
     break
 
-func Blade(count)
+func Blade(foeCount)
   ?item.GetCooldown(＂blade＂) < 1 &
-  ^foe.count >= count &
+  ^foe.count >= foeCount &
   ^foe.distance < longDist
     equip fallen god
     activate R
     break
 
-func Fissure(count)
+func Fissure(foeCount)
   ?(item.GetCooldown(＂fissure＂) < 1 |
   ^item.GetCooldown(＂fissure＂) > 450) &
-  ^foe.count >= count & foe.distance >= longDist
+  ^foe.count >= foeCount & foe.distance >= longDist
     equipL fissure
     activate L
 
