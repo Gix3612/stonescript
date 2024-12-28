@@ -1,0 +1,87 @@
+?loc.begin
+  loc
+  loc.id
+  loc.name
+  loc.stars
+  loc.isQuest
+
+?foe
+  foe
+  foe.id
+  foe.name
+  foe.damage
+  encounter.isElite
+  encounter.eliteMod
+  foe.maxhp
+  foe.maxarmor
+  foe.level
+
+?foe.buffs.count
+  ?foe.buffs.GetCount(str)
+    foe.buffs.string
+    foe.buffs.GetTime(str)
+
+?foe.debuffs.count
+  ?foe.debuffs.GetCount(str)
+    foe.debuffs.string
+    foe.debuffs.GetTime(str)
+
+?foe.state
+  foe.time
+
+?harvest
+  harvest
+  equip shovel
+  harvest.distance
+
+?item.left.state
+  item.left.time
+
+?item.right.state
+  item.right.time
+
+?pickup
+  pickup
+  equip star stone
+  pickup.distance
+
+?buffs.count
+  ?buffs.GetCount(str)
+    buffs.string
+    buffs.count > 0
+    buffs.GetTime(str)
+
+?debuffs.count
+  ?debuffs.GetCount(str)
+    debuffs.string
+    debuffs.count > 0
+    debuffs.GetTime(str)
+
+?ai.idle
+?ai.walking
+player.framesPerMove
+?pos.x
+?pos.y
+?pos.z
+
+?screen.i
+?screen.x
+?screen.w
+?screen.h
+
+summon.GetId(index = 0)
+?summon.GetId() ! "cinderwisp"
+  equipR fire talisman
+  activate R
+summon.GetName(index = 0)	
+summon.GetVar(varName, index = 0)
+summon.GetState(index = 0)
+summon.GetTime(index = 0)
+
+?time
+?totaltime
+
+item.GetCooldown(str)
+
+Log()
+storage.Set(string, value)
