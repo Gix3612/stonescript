@@ -1,5 +1,5 @@
 ?loc.begin
-  loc
+  >loc
   loc.id
   loc.name
   loc.stars
