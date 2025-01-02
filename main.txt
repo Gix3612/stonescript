@@ -225,24 +225,25 @@ var summonType
 var summonVsBoss
 
 func TalismanSummon(summonType, summonVsBoss)
-  rightItem = item.right
+  ?summon.GetId() = summonVsBoss &
+  ^foe = boss | foe ! boss &
+  ^summon.GetId() = summonType
+    equipR @rightItem@
+    return
   ?summon.GetId() ! summonVsBoss &
   ^foe = boss &! ai.idle
+    rightItem = item.right
     ?summonVsBoss = ＂cinderwisp＂
       equipR fire talisman
     ?summonVsBoss = ＂voidweaver＂
       equipR aether talisman
   ?summon.GetId() ! summonType &
   ^foe ! boss
+    rightItem = item.right
     ?summonType = ＂cinderwisp＂
       equipR fire talisman
     ?summonType = ＂voidweaver＂
       equipR aether talisman
-  ?summon.GetId() = summonVsBoss &
-  ^foe = boss | foe ! boss &
-  ^summon.GetId() = summonType
-    equipR @rightItem@
-    return
   ?item.right = talisman
     activate R
   break
@@ -264,6 +265,8 @@ func OOC()
     break
 
 func Collect()
+  ?foe.count > 0
+    return
   ?harvest = Boulder & 
   ^harvest.distance < meleeDist
     equip shovel
@@ -273,6 +276,7 @@ func Collect()
     Hatchet(R)
   ?pickup.distance < meleeDist
     FlashR(star)
+  break
 
 // --==[ Potion Functions ]==-- \\
 func Potion(type)
