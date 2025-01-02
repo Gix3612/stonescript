@@ -1,8 +1,21 @@
+import UI/MindstoneButton
+import Fishing
+//import CozyCave
+
 // --==[ Variables ]==-- \\
 var foeCount
-var health
+var health = 5
 var meleeDist = 8
 var longDist = 19
+var ac
+var summonType
+var healUp
+var leftItem
+var rightItem
+var currHP = hp
+
+?loc.begin | loc.loop
+  loadout 1
 
 // --==[ Cooldown Functions ]==-- \\
 func WeaponCooldowns(foeCount, buff)
@@ -34,6 +47,8 @@ func SingleCooldowns(buff)
   Bardiche()
   Mask()
 
+// ------------------------ \\
+
 func Bardiche()
   ?(item.GetCooldown(＂bardiche＂) < 1 |
   ^item.GetCooldown(＂bardiche＂) > 870) &
@@ -52,7 +67,8 @@ func Hammer(foeCount)
 
 func Mask()
   ?item.GetCooldown(＂mask＂) < 1 &
-  ^foe.count > 0 & foe.distance < longDist
+  ^foe.count > 0 & foe.distance < longDist &
+  ^foe ! nagaraja
     equip mask
     activate R
     break
@@ -68,7 +84,8 @@ func Skeleton(buff)
 func Blade(foeCount)
   ?item.GetCooldown(＂blade＂) < 1 &
   ^foe.count >= foeCount &
-  ^foe.distance < longDist
+  ^foe.distance < longDist &
+  ^foe ! pallas
     equip fallen god
     activate R
     break
@@ -92,50 +109,65 @@ func Hatchet(handed)
     ?handed = R
       equipR hatchet
       activate R
-    : equipL hatchet
+    :
+      equipL hatchet
       activate L
 
 // --==[ Buff Functions ]==-- \\
-Smite
-"Pick-pocket"
+// Smite
+// "Pick-pocket"
 
 // --==[ Debuff Functions ]==-- \\
-Stun
-"Armor Fatigue"
-Feeble
-Ignition
-Chill
-Burn
-  immune_to_debuff_damage
-Weaken
+// Stun
+// "Armor Fatigue"
+// Feeble
+// Ignition
+// Chill
+// Burn
+//   immune_to_debuff_damage
+// Weaken
 
 // --==[ Utility Functions ]==-- \\
-func Backstep()
-  var LeftItem = item.left
-  var RightItem = item.right
-  equip mind
-  equipL LeftItem
-  equipR RightItem
+func Backstep(handed)
+  ?handed = "right" | handed = "R" | handed = ""
+    rightItem = item.right
+    equipR mind
+  :
+    leftItem = item.left
+    equipL mind
+  ?foe.distance > 10
+    ?handed = "right" | handed = "R" | handed = ""
+      equipR rightItem
+    :
+      equipL leftItem
+  :
+    break
 
 func Dash()
   ?foe.distance > meleeDist & foe.distance < 14
-    var LeftItem = item.left
-    var RightItem = item.right
-    equip ashing
-    equipL LeftItem
-    equipR RightItem
+    rightItem = item.right
+    equipR ashing
+  ?foe.distance < meleeDist
+    equipR @rightItem@
+    return
+  :
+    break
 
 func Push(handed)
   ?foe.distance <= 13 &! unpushable
-    var LeftItem = item.left
-    var RightItem = item.right
-    ?handed = "right" | handed = "R"
+    ?handed = "right" | handed = "R" | handed = ""
+      rightItem = item.right
       equipR "grappling hook"
-    : equipL "grappling hook"
+    :
+      leftItem = item.left
+      equipL "grappling hook"
     ?foe.distance > 13
-      equipL LeftItem
-      equipR RightItem
-    : break
+      ?handed = "right" | handed = "R" | handed = ""
+        equipR rightItem
+      :
+        equipL leftItem
+    :
+      break
 
 func Heal(health)
   ?hp < health & item.potion = healing
@@ -144,40 +176,79 @@ func Heal(health)
     activate potion
   ?foe.count > 0 & hp < health * 2 &!
   ^ai.paused
-    equipL dL
     equipR ah
-    break
+    healUp = health*2-hp
 
-func flashR(item)
+func FlashR(flashItem)
     var PrevItem = item.right
-    equipR item
+    equipR flashItem
     equipR PrevItem
 
-func flashL(item)
+func FlashL(flashItem)
     var PrevItem = item.left
-    equipL item
+    equipL flashItem
     equipL PrevItem
 
-// --==[ Out of Combat ]==-- \\
-?(foe ! boss & foe.distance > longDist |
-^ai.paused)
-  equipL ouroboros
-  ?hp < maxhp-2
-    equipR tower
-  : equipR tri
+func Armored(ac)
+  ?foe.armor >= ac
+    Hammer(1)
+    Dash()
+    ?healUp > 0
+      equipL hammer
+      equipR ah
+    break
 
-?harvest.distance < meleeDist
-  ?harvest=Boulder
+func TalismanSummon(summonType, summonVsBoss)
+  rightItem = item.right
+  ?summon.GetId() ! summonVsBoss &
+  ^foe = boss &! ai.idle
+    ?summonVsBoss = ＂cinderwisp＂
+      equipR fire talisman
+    ?summonVsBoss = ＂voidweaver＂
+      equipR aether talisman
+  ?summon.GetId() ! summonType &
+  ^foe ! boss
+    ?summonType = ＂cinderwisp＂
+      equipR fire talisman
+    ?summonType = ＂voidweaver＂
+      equipR aether talisman
+  ?summon.GetId() = summonVsBoss &
+  ^foe = boss | foe ! boss &
+  ^summon.GetId() = summonType
+    equipR @rightItem@
+    return
+  ?item.right = talisman
+    activate R
+  break
+
+func UsePotions()
+  ?foe = boss &! ai.paused &
+  ^(item.potion = berserk & foe.armor < 1 )
+    activate potion
+
+// --==[ Out of Combat ]==-- \\
+func OOC()
+  ?(foe ! boss & foe.distance > longDist |
+  ^ai.paused)
+    equipL ouroboros
+    ?hp < maxhp-2
+      equipR tower
+    :
+      equipR tri
+
+func Collect()
+  ?harvest=Boulder & 
+  ^harvest.distance < meleeDist
     equip shovel
-  ?harvest=Tree
+  ?harvest=Tree & 
+  ^harvest.distance < meleeDist
     equipR hatchet
     Hatchet(R)
-
-?pickup.distance < meleeDist
-  flashR(star)
+  ?pickup.distance < meleeDist
+    FlashR(star)
 
 // --==[ Potion Functions ]==-- \\
-func potion(type)
+func Potion(type)
   ?!loc.begin
     return
   
@@ -202,23 +273,41 @@ func potion(type)
   :?type = "invisibility"
     brew wood + stone
   :
-    ui.ShowBanner("Wrong potion type!")
+    ui.ShowBanner("Invalid potion type!")
     loc.Leave()
 
-
-
-
+// Other
 ?foe = bolesh
   ?hp < 16
-    activate potion
+  Heal(15)
     equipL ice
-    equipR ah
     break
   RangeCooldowns()
   ?foe.distance < 12
-    Backstep()
+    Backstep(R)
   equipL crossbow
   equipR ah
+  break
+
+?foe = nagaraja
+  ?hp < maxhp - 5
+    Heal(maxhp / 2 - 2)
+    equipL crossbow
+    break
+  RangeCooldowns(0)
+  UsePotions()
+  ?foe.distance < 12
+    Backstep(R)
+  equip crossbow socket
+  break
+
+?foe = hrímnir
+  Heal(10)
+  UsePotions()
+  WeaponCooldowns(1, 2)
+  Armored(1)
+  ?foe.distance > meleeDist
+    Dash()
   break
 
 ?loc=rocky & foe.distance < longDist
@@ -253,9 +342,31 @@ func potion(type)
   equip blade
   break
 
+TalismanSummon(voidweaver, cinderwisp)
+
+?summon.GetId() = ＂cinderwisp＂ &
+^summon.GetVar(＂ignition＂) > 10
+  activate cinderwisp
+
 Heal(10)
 
-WeaponCooldowns(5, 1)
+UsePotions()
+
+?foe = boss
+  WeaponCooldowns(1, 2)
+
+// Quest Objectives - remove later
+Blade(5)
+?foe.hp < 18
+  Skeleton()
+?foe = boss
+  Mask()
+
+Armored(35)
+
+OOC()
+
+Collect()
 
 ?foe = immune_to_physical
   equipL wand
@@ -263,16 +374,12 @@ WeaponCooldowns(5, 1)
   break
 
 ?foe = immune_to_ranged
-  equipL sword
-  equipR ah
+  equip bardiche
   break
 
-?foe.distance > meleeDist
-  equip crossbow U
+// Current stuff - remove later
+loadout 5
+Dash()
 
-?foe.armor > 35
-  Hammer(1)
-  Dash()
-  ?hp < 15
-    equipL hammer
-    equipR ah
+//?foe.distance > meleeDist
+//  equip crossbow socket
