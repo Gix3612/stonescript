@@ -308,6 +308,12 @@ func Potion(type)
     loc.Leave()
 
 // Logic Tree
+TalismanSummon(voidweaver, cinderwisp)
+
+?summon.GetId() = ＂cinderwisp＂ &
+^summon.GetVar(＂ignition＂) > 10
+  activate cinderwisp
+
 ?foe = bolesh
   ?hp < 16
   Heal(15)
@@ -373,17 +379,11 @@ func Potion(type)
   equip blade
   break
 
-TalismanSummon(voidweaver, cinderwisp)
-
-?summon.GetId() = ＂cinderwisp＂ &
-^summon.GetVar(＂ignition＂) > 10
-  activate cinderwisp
-
 Collect()
 
-OOC()
-
 Heal(10)
+
+OOC()
 
 UsePotions()
 
