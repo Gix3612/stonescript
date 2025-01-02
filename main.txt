@@ -10,6 +10,7 @@ var longDist = 19
 var ac
 var summonType
 var healUp
+var prevItem
 var leftItem
 var rightItem
 var currHP = hp
@@ -180,14 +181,22 @@ func Heal(health)
     healUp = health*2-hp
 
 func FlashR(flashItem)
-    var PrevItem = item.right
-    equipR flashItem
-    equipR PrevItem
+    prevItem = item.right
+    equipR @flashItem@
+    ?item.right = @flashItem@
+      equipR @prevItem@
+      return
+    :
+      break
 
 func FlashL(flashItem)
-    var PrevItem = item.left
-    equipL flashItem
-    equipL PrevItem
+    prevItem = item.left
+    equipL @flashItem@
+    ?item.left = @flashItem@
+      equipL @prevItem@
+      return
+    :
+      break
 
 func Armored(ac)
   ?foe.armor >= ac
@@ -282,7 +291,7 @@ func Potion(type)
   Heal(15)
     equipL ice
     break
-  RangeCooldowns()
+  RangeCooldowns(0)
   ?foe.distance < 12
     Backstep(R)
   equipL crossbow
@@ -358,7 +367,7 @@ UsePotions()
 // Quest Objectives - remove later
 Blade(5)
 ?foe.hp < 18
-  Skeleton()
+  Skeleton(2)
 ?foe = boss
   Mask()
 
