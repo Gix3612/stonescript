@@ -58,6 +58,8 @@ func Bardiche()
     equip bardiche
     activate R
     break
+  :
+    return
 
 func Hammer(foeCount)
   ?(item.GetCooldown(＂heavy_hammer＂) < 1 | 
@@ -67,6 +69,8 @@ func Hammer(foeCount)
     equip heavy hammer
     activate R
     break
+  :
+    return
 
 func Mask()
   ?item.GetCooldown(＂mask＂) < 1 &
@@ -75,6 +79,8 @@ func Mask()
     equipR mask
     activate R
     break
+  :
+    return
 
 func Skeleton(buffCount)
   ?item.GetCooldown(＂skeleton_arm＂) < 2 &
@@ -84,6 +90,8 @@ func Skeleton(buffCount)
       activate R
       return
     break
+  :
+    return
 
 func Blade(foeCount)
   ?item.GetCooldown(＂blade＂) < 1 &
@@ -93,6 +101,8 @@ func Blade(foeCount)
     equip blade
     activate R
     break
+  :
+    return
 
 func Fissure(foeCount)
   ?(item.GetCooldown(＂fissure＂) < 1 |
@@ -100,12 +110,18 @@ func Fissure(foeCount)
   ^foe.count >= foeCount & foe.distance >= longDist
     equipL fissure
     activate L
+    break
+  :
+    return
 
 func Quarterstaff()
   ?item.GetCooldown(＂quarterstaff＂) < 1 &
   ^foe.distance > meleeDist
     equip "quarterstaff -socket -stone"
     activate R
+    break
+  :
+    return
 
 func Hatchet(handed)
   ?item.GetCooldown(＂hatchet＂) < 1 &
@@ -113,9 +129,13 @@ func Hatchet(handed)
     ?handed = R
       equipR hatchet
       activate R
+      break
     :
       equipL hatchet
       activate L
+      break
+  :
+    return
 
 // --==[ Buff Functions ]==-- \\
 // Smite
