@@ -133,9 +133,9 @@ var rightItem
 func Backstep(handed)
   ?foe.distance > 10 | item.GetCooldown("mind") > 0
     ?handed = "right" | handed = "R" | handed = ""
-      equipR @rightItem@
+      equipR @this.rightItem@
     :
-      equipL @leftItem@
+      equipL @this.leftItem@
     return
   ?handed = "right" | handed = "R" | handed = ""
     rightItem = item.right
@@ -147,7 +147,7 @@ func Backstep(handed)
 
 func Dash()
   ?foe.distance < meleeDist
-    equipR @rightItem@
+    equipR @this.rightItem@
     return
   ?foe.distance > meleeDist & foe.distance < 14
     rightItem = item.right
@@ -164,9 +164,9 @@ func Dash()
 func Push(handed)
   ?foe.distance > 13
     ?handed = "right" | handed = "R" | handed = ""
-      equipR @rightItem@
+      equipR @this.rightItem@
     :
-      equipL @leftItem@
+      equipL @this.leftItem@
     return
   ?foe ! unpushable
     ?handed = "right" | handed = "R" | handed = ""
@@ -228,10 +228,10 @@ func TalismanSummon(summonType, summonVsBoss)
   ?summon.GetId() = summonVsBoss &
   ^foe = boss | foe ! boss &
   ^summon.GetId() = summonType
-    equipR @rightItem@
+    equipR @this.rightItem@
     return
   ?summon.GetId() ! summonVsBoss &
-  ^foe = boss &! ai.idle
+  ^foe = boss &! ai.paused
     rightItem = item.right
     ?summonVsBoss = ＂cinderwisp＂
       equipR fire talisman
@@ -255,7 +255,7 @@ func UsePotions()
 
 // --==[ Out of Combat ]==-- \\
 func OOC()
-  ?(foe ! boss & foe.distance > longDist |
+  ?(foe ! boss & foe.count <= 0 |
   ^ai.paused)
     equipL ouroboros
     ?hp < maxhp-2
