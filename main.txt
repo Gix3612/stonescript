@@ -70,7 +70,7 @@ func Mask()
   ?item.GetCooldown(＂mask＂) < 1 &
   ^foe.count > 0 & foe.distance < longDist &
   ^foe ! nagaraja
-    equip mask
+    equipR mask
     activate R
     break
 
@@ -87,7 +87,7 @@ func Blade(foeCount)
   ^foe.count >= foeCount &
   ^foe.distance < longDist &
   ^foe ! pallas
-    equip fallen god
+    equip blade
     activate R
     break
 
@@ -151,6 +151,8 @@ func Dash()
       equipR bashing
     :?item.GetCooldown("dash") <= 0
       equipR dashing
+    :?item.GetCooldown("quarterstaff") <= 0
+      Quarterstaff()
     :
       equipR star
   ?foe.distance < meleeDist
