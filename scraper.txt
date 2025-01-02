@@ -1,9 +1,10 @@
 ?loc.begin
-  loc
-  loc.id
-  loc.name
-  loc.stars
-  loc.isQuest
+  var print = @loc@ + 
+  ^ ", " + @loc.name@ + 
+  ^ ", ID: " + @loc.id@ + 
+  ^ " *" + @loc.stars@ + 
+  ^ ", Quest?: " + @loc.isQuest@
+  Log(loc, print)
 
 ?foe
   foe
@@ -34,16 +35,27 @@
   equip shovel
   harvest.distance
 
+?pickup
+  pickup
+  equip star stone
+  pickup.distance
+
 ?item.left.state
   item.left.time
 
 ?item.right.state
   item.right.time
 
-?pickup
-  pickup
-  equip star stone
-  pickup.distance
+item.GetCooldown(str)
+
+summon.GetId(index = 0)
+?summon.GetId() ! "cinderwisp"
+  equipR fire talisman
+  activate R
+summon.GetName(index = 0)	
+summon.GetVar(varName, index = 0)
+summon.GetState(index = 0)
+summon.GetTime(index = 0)
 
 ?buffs.count
   ?buffs.GetCount(str)
@@ -69,19 +81,9 @@ player.framesPerMove
 ?screen.w
 ?screen.h
 
-summon.GetId(index = 0)
-?summon.GetId() ! "cinderwisp"
-  equipR fire talisman
-  activate R
-summon.GetName(index = 0)	
-summon.GetVar(varName, index = 0)
-summon.GetState(index = 0)
-summon.GetTime(index = 0)
-
 ?time
 ?totaltime
 
-item.GetCooldown(str)
-
-Log()
-storage.Set(string, value)
+Log(index, value)
+  > value
+  storage.Set(@index@, value)
