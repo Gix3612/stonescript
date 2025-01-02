@@ -141,9 +141,9 @@ func Dash()
     return
   ?foe.distance > meleeDist & foe.distance < 14
     ?item.GetCooldown("bash") <= 0
-      equipR bashing
+      FlashR(bashing)
     :?item.GetCooldown("dash") <= 0
-      equipR dashing
+      FlashR(dashing)
     :?item.GetCooldown("quarterstaff") <= 0
       Quarterstaff()
   :
