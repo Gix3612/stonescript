@@ -20,31 +20,31 @@ var currHP = hp
 
 // --==[ Cooldown Functions ]==-- \\
 func WeaponCooldowns(foeCount, buff)
-  Skeleton(buff)
+  Skeleton(@buff@)
   Bardiche()
-  Hammer(foeCount)
+  Hammer(@foeCount@)
   Mask()
-  Blade(foeCount)
-  Fissure(foeCount)
+  Blade(@foeCount@)
+  Fissure(@foeCount@)
 
 func MeleeCooldowns(foeCount, buff)
-  Skeleton(buff)
+  Skeleton(@buff@)
   Bardiche()
-  Hammer(foeCount)
+  Hammer(@foeCount@)
 
 func RangeCooldowns(foeCount)
   Mask()
-  Blade(foeCount)
-  Fissure(foeCount)
+  Blade(@foeCount@)
+  Fissure(@foeCount@)
 
 func AreaCooldowns(foeCount)
   Mask()
-  Blade(foeCount)
-  Hammer(foeCount)
-  Fissure(foeCount)
+  Blade(@foeCount@)
+  Hammer(@foeCount@)
+  Fissure(@foeCount@)
 
 func SingleCooldowns(buff)
-  Skeleton(buff)
+  Skeleton(@buff@)
   Bardiche()
   Mask()
 
@@ -147,7 +147,12 @@ func Backstep(handed)
 func Dash()
   ?foe.distance > meleeDist & foe.distance < 14
     rightItem = item.right
-    equipR ashing
+    ?item.GetCooldown("bash") <= 0
+      equipR bashing
+    :?item.GetCooldown("dash") <= 0
+      equipR dashing
+    :
+      equipR star
   ?foe.distance < meleeDist
     equipR @rightItem@
     return
