@@ -379,6 +379,10 @@ TalismanSummon(voidweaver, cinderwisp)
 ^summon.GetVar(＂ignition＂) > 10
   activate cinderwisp
 
+Collect()
+
+OOC()
+
 Heal(10)
 
 UsePotions()
@@ -394,10 +398,6 @@ Blade(5)
   Mask()
 
 Armored(35)
-
-OOC()
-
-Collect()
 
 ?foe = immune_to_physical
   equipL wand
