@@ -4,6 +4,7 @@ import Fishing
 
 // --==[ Variables ]==-- \\
 var foeCount
+var buffCount
 var health = 5
 var meleeDist = 8
 var longDist = 19
@@ -19,32 +20,32 @@ var currHP = hp
   loadout 1
 
 // --==[ Cooldown Functions ]==-- \\
-func WeaponCooldowns(foeCount, buff)
-  Skeleton(@buff@)
+func WeaponCooldowns(foeCount, buffCount)
+  Skeleton(buffCount)
   Bardiche()
-  Hammer(@foeCount@)
+  Hammer(foeCount)
   Mask()
-  Blade(@foeCount@)
-  Fissure(@foeCount@)
+  Blade(foeCount)
+  Fissure(foeCount)
 
-func MeleeCooldowns(foeCount, buff)
-  Skeleton(@buff@)
+func MeleeCooldowns(foeCount, buffCount)
+  Skeleton(buffCount)
   Bardiche()
-  Hammer(@foeCount@)
+  Hammer(foeCount)
 
 func RangeCooldowns(foeCount)
   Mask()
-  Blade(@foeCount@)
-  Fissure(@foeCount@)
+  Blade(foeCount)
+  Fissure(foeCount)
 
 func AreaCooldowns(foeCount)
   Mask()
-  Blade(@foeCount@)
-  Hammer(@foeCount@)
-  Fissure(@foeCount@)
+  Blade(foeCount)
+  Hammer(foeCount)
+  Fissure(foeCount)
 
-func SingleCooldowns(buff)
-  Skeleton(@buff@)
+func SingleCooldowns(buffCount)
+  Skeleton(buffCount)
   Bardiche()
   Mask()
 
@@ -61,7 +62,8 @@ func Bardiche()
 func Hammer(foeCount)
   ?(item.GetCooldown(＂heavy_hammer＂) < 1 | 
   ^item.GetCooldown(＂heavy_hammer＂) > 630) &
-  ^foe.count >= foeCount & foe.distance < meleeDist
+  ^foe.count >= foeCount &
+  ^foe.distance < meleeDist
     equip heavy hammer
     activate R
     break
@@ -74,12 +76,13 @@ func Mask()
     activate R
     break
 
-func Skeleton(buff)
+func Skeleton(buffCount)
   ?item.GetCooldown(＂skeleton_arm＂) < 2 &
   ^foe.count >= 1 & foe.distance < meleeDist
     equip skeleton
-    ?buffs.GetCount("Pick-pocket") >= buff
+    ?buffs.GetCount("pick_pocket") > buffCount - 1
       activate R
+      return
     break
 
 func Blade(foeCount)
@@ -100,9 +103,9 @@ func Fissure(foeCount)
 
 func Quarterstaff()
   ?item.GetCooldown(＂quarterstaff＂) < 1 &
-  ^(foe.distance > meleeDist)
-    equipL "quarterstaff -socket -stone"
-    activate L
+  ^foe.distance > meleeDist
+    equip "quarterstaff -socket -stone"
+    activate R
 
 func Hatchet(handed)
   ?item.GetCooldown(＂hatchet＂) < 1 &
@@ -145,6 +148,11 @@ func Backstep(handed)
     break
 
 func Dash()
+  ?foe.distance < meleeDist
+    equipR @rightItem@
+    return
+  :
+    break
   ?foe.distance > meleeDist & foe.distance < 14
     rightItem = item.right
     ?item.GetCooldown("bash") <= 0
@@ -155,11 +163,6 @@ func Dash()
       Quarterstaff()
     :
       equipR star
-  ?foe.distance < meleeDist
-    equipR @rightItem@
-    return
-  :
-    break
 
 func Push(handed)
   ?foe.distance <= 13 &! unpushable
