@@ -126,31 +126,20 @@ func Hatchet(handed)
 // Weaken
 
 // --==[ Utility Functions ]==-- \\
-var prevItem
-var leftItem
-var rightItem
 
 func Backstep(handed)
   ?foe.distance > 10 | item.GetCooldown("mind") > 0
-    ?handed = "right" | handed = "R" | handed = ""
-      equipR @this.rightItem@
-    :
-      equipL @this.leftItem@
     return
   ?handed = "right" | handed = "R" | handed = ""
-    rightItem = item.right
     equipR mind
   :
-    leftItem = item.left
     equipL mind
   break
 
 func Dash()
   ?foe.distance < meleeDist
-    equipR @this.rightItem@
     return
   ?foe.distance > meleeDist & foe.distance < 14
-    rightItem = item.right
     ?item.GetCooldown("bash") <= 0
       equipR bashing
     :?item.GetCooldown("dash") <= 0
@@ -163,17 +152,11 @@ func Dash()
 
 func Push(handed)
   ?foe.distance > 13
-    ?handed = "right" | handed = "R" | handed = ""
-      equipR @this.rightItem@
-    :
-      equipL @this.leftItem@
     return
   ?foe ! unpushable
     ?handed = "right" | handed = "R" | handed = ""
-      rightItem = item.right
       equipR "grappling hook"
     :
-      leftItem = item.left
       equipL "grappling hook"
   break
 
@@ -191,6 +174,7 @@ func Heal(health)
     healUp = health*2-hp
 
 var flashItem
+var prevItem
 
 func FlashR(flashItem)
     ?item.right = flashItem
@@ -228,18 +212,15 @@ func TalismanSummon(summonType, summonVsBoss)
   ?summon.GetId() = summonVsBoss &
   ^foe = boss | foe ! boss &
   ^summon.GetId() = summonType
-    equipR @this.rightItem@
     return
   ?summon.GetId() ! summonVsBoss &
   ^foe = boss &! ai.paused
-    rightItem = item.right
     ?summonVsBoss = ＂cinderwisp＂
       equipR fire talisman
     ?summonVsBoss = ＂voidweaver＂
       equipR aether talisman
   ?summon.GetId() ! summonType &
   ^foe ! boss
-    rightItem = item.right
     ?summonType = ＂cinderwisp＂
       equipR fire talisman
     ?summonType = ＂voidweaver＂
