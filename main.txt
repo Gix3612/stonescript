@@ -2,24 +2,16 @@ import UI/MindstoneButton
 import Fishing
 //import CozyCave
 
-// --==[ Variables ]==-- \\
-var foeCount
-var buffCount
-var health = 5
-var meleeDist = 8
-var longDist = 19
-var ac
-var summonType
-var healUp
-var prevItem
-var leftItem
-var rightItem
-var currHP = hp
-
 ?loc.begin | loc.loop
   loadout 1
 
 // --==[ Cooldown Functions ]==-- \\
+var foeCount
+var buffCount
+var meleeDist = 8
+var longDist = 19
+var handed
+
 func WeaponCooldowns(foeCount, buffCount)
   Skeleton(buffCount)
   Bardiche()
@@ -152,6 +144,10 @@ func Hatchet(handed)
 // Weaken
 
 // --==[ Utility Functions ]==-- \\
+var prevItem
+var leftItem
+var rightItem
+
 func Backstep(handed)
   ?handed = "right" | handed = "R" | handed = ""
     rightItem = item.right
@@ -200,15 +196,20 @@ func Push(handed)
     :
       break
 
+var health = 5
+var healUp
+
 func Heal(health)
-  ?hp < health & item.potion = healing
+  ?hp < health & item.potion = "healing"
     activate potion
-  ?hp < health * 2 & item.potion = vampire
+  ?hp < health * 2 & item.potion = "vampiric"
     activate potion
   ?foe.count > 0 & hp < health * 2 &!
   ^ai.paused
     equipR ah
     healUp = health*2-hp
+
+var flashItem
 
 func FlashR(flashItem)
     prevItem = item.right
@@ -222,11 +223,13 @@ func FlashR(flashItem)
 func FlashL(flashItem)
     prevItem = item.left
     equipL @flashItem@
-    ?item.left = @flashItem@
+    ?item.left = flashItem
       equipL @prevItem@
       return
     :
       break
+
+var ac
 
 func Armored(ac)
   ?foe.armor >= ac
@@ -236,6 +239,9 @@ func Armored(ac)
       equipL hammer
       equipR ah
     break
+
+var summonType
+var summonVsBoss
 
 func TalismanSummon(summonType, summonVsBoss)
   rightItem = item.right
@@ -276,10 +282,10 @@ func OOC()
       equipR tri
 
 func Collect()
-  ?harvest=Boulder & 
+  ?harvest = Boulder & 
   ^harvest.distance < meleeDist
     equip shovel
-  ?harvest=Tree & 
+  ?harvest = Tree & 
   ^harvest.distance < meleeDist
     equipR hatchet
     Hatchet(R)
@@ -349,7 +355,7 @@ func Potion(type)
     Dash()
   break
 
-?loc=rocky & foe.distance < longDist
+?loc = rocky & foe.distance < longDist
   ?foe.armor > 0 & hp > 15
     equip heavy hammer
     Hammer(1)
