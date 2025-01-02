@@ -141,9 +141,9 @@ func Dash()
     return
   ?foe.distance > meleeDist & foe.distance < 14
     ?item.GetCooldown("bash") <= 0
-      FlashR(bashing)
+      equipR bashing
     :?item.GetCooldown("dash") <= 0
-      FlashR(dashing)
+      equipR dashing
     :?item.GetCooldown("quarterstaff") <= 0
       Quarterstaff()
   :
@@ -256,7 +256,7 @@ func Collect()
     equipR hatchet
     Hatchet(R)
   ?pickup.distance < meleeDist
-    FlashR(star)
+    equipR star
   break
 
 // --==[ Potion Functions ]==-- \\
