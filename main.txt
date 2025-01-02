@@ -50,8 +50,6 @@ func Bardiche()
     equip bardiche
     activate R
     break
-  :
-    return
 
 func Hammer(foeCount)
   ?(item.GetCooldown(＂heavy_hammer＂) < 1 | 
@@ -61,8 +59,6 @@ func Hammer(foeCount)
     equip heavy hammer
     activate R
     break
-  :
-    return
 
 func Mask()
   ?item.GetCooldown(＂mask＂) < 1 &
@@ -71,8 +67,6 @@ func Mask()
     equipR mask
     activate R
     break
-  :
-    return
 
 func Skeleton(buffCount)
   ?item.GetCooldown(＂skeleton_arm＂) < 2 &
@@ -80,10 +74,7 @@ func Skeleton(buffCount)
     equip skeleton
     ?buffs.GetCount("pick_pocket") > buffCount - 1
       activate R
-      return
     break
-  :
-    return
 
 func Blade(foeCount)
   ?item.GetCooldown(＂blade＂) < 1 &
@@ -93,8 +84,6 @@ func Blade(foeCount)
     equip blade
     activate R
     break
-  :
-    return
 
 func Fissure(foeCount)
   ?(item.GetCooldown(＂fissure＂) < 1 |
@@ -103,8 +92,6 @@ func Fissure(foeCount)
     equipL fissure
     activate L
     break
-  :
-    return
 
 func Quarterstaff()
   ?item.GetCooldown(＂quarterstaff＂) < 1 &
@@ -112,8 +99,6 @@ func Quarterstaff()
     equip "quarterstaff -socket -stone"
     activate R
     break
-  :
-    return
 
 func Hatchet(handed)
   ?item.GetCooldown(＂hatchet＂) < 1 &
@@ -121,13 +106,10 @@ func Hatchet(handed)
     ?handed = R
       equipR hatchet
       activate R
-      break
     :
       equipL hatchet
       activate L
-      break
-  :
-    return
+    break
 
 // --==[ Buff Functions ]==-- \\
 // Smite
@@ -149,26 +131,24 @@ var leftItem
 var rightItem
 
 func Backstep(handed)
+  ?foe.distance > 10 | item.GetCooldown("mind") > 0
+    ?handed = "right" | handed = "R" | handed = ""
+      equipR @rightItem@
+    :
+      equipL @leftItem@
+    return
   ?handed = "right" | handed = "R" | handed = ""
     rightItem = item.right
     equipR mind
   :
     leftItem = item.left
     equipL mind
-  ?foe.distance > 10
-    ?handed = "right" | handed = "R" | handed = ""
-      equipR rightItem
-    :
-      equipL leftItem
-  :
-    break
+  break
 
 func Dash()
   ?foe.distance < meleeDist
     equipR @rightItem@
     return
-  :
-    break
   ?foe.distance > meleeDist & foe.distance < 14
     rightItem = item.right
     ?item.GetCooldown("bash") <= 0
@@ -177,24 +157,25 @@ func Dash()
       equipR dashing
     :?item.GetCooldown("quarterstaff") <= 0
       Quarterstaff()
-    :
-      equipR star
+  :
+    equipR star
+  break
 
 func Push(handed)
-  ?foe.distance <= 13 &! unpushable
+  ?foe.distance > 13
+    ?handed = "right" | handed = "R" | handed = ""
+      equipR @rightItem@
+    :
+      equipL @leftItem@
+    return
+  ?foe ! unpushable
     ?handed = "right" | handed = "R" | handed = ""
       rightItem = item.right
       equipR "grappling hook"
     :
       leftItem = item.left
       equipL "grappling hook"
-    ?foe.distance > 13
-      ?handed = "right" | handed = "R" | handed = ""
-        equipR rightItem
-      :
-        equipL leftItem
-    :
-      break
+  break
 
 var health = 5
 var healUp
@@ -212,22 +193,22 @@ func Heal(health)
 var flashItem
 
 func FlashR(flashItem)
-    prevItem = item.right
-    equipR @flashItem@
-    ?item.right = @flashItem@
+    ?item.right = flashItem
       equipR @prevItem@
       return
     :
-      break
+      prevItem = item.right
+      equipR @flashItem@
+    break
 
 func FlashL(flashItem)
-    prevItem = item.left
-    equipL @flashItem@
     ?item.left = flashItem
       equipL @prevItem@
       return
     :
-      break
+      prevItem = item.left
+      equipL @flashItem@
+    break
 
 var ac
 
@@ -280,6 +261,7 @@ func OOC()
       equipR tower
     :
       equipR tri
+    break
 
 func Collect()
   ?harvest = Boulder & 
@@ -321,7 +303,7 @@ func Potion(type)
     ui.ShowBanner("Invalid potion type!")
     loc.Leave()
 
-// Other
+// Logic Tree
 ?foe = bolesh
   ?hp < 16
   Heal(15)
