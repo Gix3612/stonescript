@@ -236,8 +236,7 @@ func UsePotions()
 
 // --==[ Out of Combat ]==-- \\
 func OOC()
-  ?(foe ! boss & foe.count <= 0 |
-  ^ai.paused)
+  ?foe.state = -1 | ai.paused
     equipL ouroboros
     ?hp < maxhp-2
       equipR tower
@@ -246,7 +245,7 @@ func OOC()
     break
 
 func Collect()
-  ?foe.count > 0
+  ?foe.state <= 0
     return
   ?harvest = Boulder & 
   ^harvest.distance < meleeDist
